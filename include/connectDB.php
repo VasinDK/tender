@@ -11,6 +11,6 @@ $mysqli -> set_charset('utf8');
 
 if ($mysqli->connect_error){
     die('Ошибка соединения: ' . $mysqli -> connect_error);
-} else echo 'БД подключена';
+}
 
 ?>
