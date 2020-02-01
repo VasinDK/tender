@@ -1,5 +1,5 @@
 <?
-$server = 'localgost'; //адрес сервера
+$server = 'localhost'; //адрес сервера
 $bd = 'boss11_tender'; //база данных
 $userDB = 'boss11_tender'; //пользователь бд
 $passDB = 'boss11_tender'; //парол Бд
