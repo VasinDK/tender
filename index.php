@@ -35,28 +35,87 @@ include 'include/select_all.php';
         window.location = "index.php";
     }
 
-    function funBeforDeleteId(){
-        $('#'+id).text('подождите...');
+    function funBeforUp(){
+        $('#info').text('подождите...');
+    }
+
+    function funSuccessUp(informat){
+        if(informat=='ok'){
+            window.location = "index.php";
+        } else alert('Что то пошло не так: '+informat);
+
+    }
+
+    function funBeforDeleteId(tdDel){
+        $('#'+tdDel).text('подождите...');
     }
 
     function funSuccessDeleteId(informat){
-        $('#'+id).text(informat)
-        window.location = "index.php";
+        //$('#info').text(informat)
+
+        if(informat != false){
+           $('#idTr'+informat).remove();
+
+        }
 
     }
 
-    function deleteId(id){
-        var id=id;
+    function delRow(idRow){
+        var id=idRow;
+        var tdDel='tdDel'+idRow;
         $.ajax({
             url:'delete.php',
             type: 'POST',
             data: ({id:id}),
             dataType:'html',
-            beforeSend:funBeforDeleteId,
+            beforeSend:funBeforDeleteId(tdDel),
             success:funSuccessDeleteId
         });
 
     };
+
+     function setRow(eqi, idAfter){
+
+         var eqiId=eqi+0;
+         var eqiDate=eqi+1;
+         var eqiName=eqi+2;
+         var eqiDCode=eqi+3;
+         var eqiDYear=eqi+4;
+         var eqiIdValue=$('td').eq(eqiId).text();
+         var eqiDateValue=$('td').eq(eqiDate).text();
+         var eqiNameValue=$('td').eq(eqiName).text();
+         var eqiDCodeValue=$('td').eq(eqiDCode).text();
+         var eqiDYearValue=$('td').eq(eqiDYear).text();
+
+         //var eq12 = $('td').eq(14).text();
+         //alert(eqiDYearValue);
+
+         $('#idTr'+idAfter).after('<tr><td>'+idAfter+'</td><td><input id="setDate" value="'+eqiDateValue+'"></td><td><input id="setName" value="'+eqiNameValue+'"></td><td><input id="setCode" value="'+eqiDCodeValue+'" ></td><td><input id="setYers" value="'+eqiDYearValue+'"></td><td><button  onclick="setRowOk('+idAfter+')">Ок</button></td><td><button  onclick="setRowOFF()">Отмена</button></td></tr>');
+         $('#idTr'+idAfter).remove();
+     };
+
+    function setRowOk(id){
+                var setEqiId = id;
+               var setDate = $('#setDate').val();
+               var setName = $('#setName').val();
+               var setCode = $('#setCode').val();
+               var setYers = $('#setYers').val();
+
+            $.ajax({
+            url:'update.php',
+            type: 'POST',
+            data: ({id:setEqiId, name:setName, date:setDate, code:setCode, year:setYers}),
+            dataType:'html',
+            beforeSend:funBeforUp(),
+            success:funSuccessUp
+        });
+
+
+    }
+
+    function setRowOFF(){
+        window.location = "index.php";
+    }
 
     $(document).ready(function(){
         $('#buttonInc').on('click', function () {
@@ -72,6 +131,7 @@ include 'include/select_all.php';
             $('#buttonOff').css("display", "none");
             $('#button').css("display", "none");
         });
+
 
         $('#button').on('click', function (){
             var name=$('#name').val();
@@ -89,20 +149,20 @@ include 'include/select_all.php';
 
             });
 
-
         });
+
     });
 </script>
 
-<h1>Таблица тендеров</h1>
+<h1 contenteditable="true">Таблица тендеров</h1>
 
 <table>
     <thead>
-    <tr><td>id</td><td>date</td><td>name</td><td>code</td><td>year</td><td>Удалить</td></tr>
+    <tr><td>id</td><td>date</td><td>name</td><td>code</td><td>year</td><td>Удалить</td><td>Изменить</td></tr>
     </thead>
     <tbody>
 <? for($i = 0; $i < count($tender['id']); $i++){ ?>
-    <tr>
+    <tr id="<? echo 'idTr'.$tender['id'][$i]; ?>">
         <td>
             <? echo $tender['id'][$i]; ?>
         </td>
@@ -118,8 +178,11 @@ include 'include/select_all.php';
         <td>
             <? echo $tender['year'][$i]; ?>
         </td>
-        <td id="<? echo $tender['id'][$i]; ?>">
-            <img src="img/bin.svg">
+        <td id="<? echo 'tdDel'.$tender['id'][$i]; ?>">
+            <a href='#' onclick="delRow(<? echo $tender['id'][$i]; ?>)"><img src="img/bin.svg" width="10" alt=""</a>
+        </td>
+        <td id="<? echo 'tdSet'.$tender['id'][$i]; ?>">
+            <a href='#' onclick="setRow(<? $eqi = $eqi+7; echo $eqi; ?>,<? echo $tender['id'][$i]; ?>)"><img src="img/pencil.svg" width="10" alt=""</a>
         </td>
 
     </tr>
